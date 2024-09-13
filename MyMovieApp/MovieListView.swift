@@ -1,28 +1,37 @@
 import SwiftUI
 
 struct MovieListView: View {
-    var movies: [Movie] // Променяме типа от [String] на [Movie]
-    var onMovieSelect: (Movie) -> Void // Променяме типа на филма
+    @State private var searchText = ""
+    var movies: [MovieModel] // Използваме MovieModel вместо String
+    var onMovieSelect: (MovieModel) -> Void
+
+    var filteredMovies: [MovieModel] {
+        if searchText.isEmpty {
+            return movies
+        } else {
+            return movies.filter { movie in
+                movie.title.lowercased().contains(searchText.lowercased())
+            }
+        }
+    }
 
     var body: some View {
         NavigationView {
-            List(movies, id: \.title) { movie in // Използваме title като уникален идентификатор
+            List(filteredMovies, id: \.id) { movie in
                 Button(action: {
                     onMovieSelect(movie) // Извиква се при натискане на филм
                 }) {
-                    Text(movie.title) // Показваме заглавието на филма
+                    Text(movie.title)
                 }
             }
             .navigationTitle("Movies")
+            .searchable(text: $searchText, prompt: "Search for movies or actors")
         }
     }
 }
 
 struct MovieListView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieListView(movies: [
-            Movie(title: "Inception", overview: "A mind-bending thriller.", vote_average: 8.8, poster_path: nil),
-            Movie(title: "Interstellar", overview: "A space exploration film.", vote_average: 8.6, poster_path: nil)
-        ], onMovieSelect: { _ in })
+        MovieListView(movies: [MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: nil)], onMovieSelect: { _ in })
     }
 }

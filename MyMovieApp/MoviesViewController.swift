@@ -1,9 +1,17 @@
 import UIKit
 import SwiftUI
 
+// Преименувана структура `MovieModel`
+struct MovieModel: Decodable, Identifiable {
+    let id: Int
+    let title: String
+    let vote_average: Double // Рейтинг
+    let poster_path: String? // Път към постера
+}
+
 class MoviesViewController: UIViewController {
     
-    var movies: [Movie] = [] // Променяме масива, който държи обекти Movie
+    var movies: [MovieModel] = [] // Използваме MovieModel
     var hostingController: UIHostingController<MovieListView>? // Хостинг контролер за SwiftUI изгледа
     
     override func viewDidLoad() {
@@ -72,26 +80,23 @@ class MoviesViewController: UIViewController {
         hostingController.rootView = swiftUIView
     }
     
-    func showMovieDetail(movie: Movie) {
+    func showMovieDetail(movie: MovieModel) {
+        let moviePosterURL = "https://image.tmdb.org/t/p/w500" + (movie.poster_path ?? "")
+        let movieRating = movie.vote_average
+        
         let detailView = MovieDetailView(
             movieTitle: movie.title,
-            movieDescription: movie.overview,
-            movieRating: movie.vote_average,
-            moviePosterURL: "https://image.tmdb.org/t/p/w500\(movie.poster_path ?? "")"
+            movieDescription: "Това е описание на филма \(movie.title).",
+            movieRating: movieRating,
+            moviePosterURL: moviePosterURL
         )
+        
         let detailHostingController = UIHostingController(rootView: detailView)
         self.navigationController?.pushViewController(detailHostingController, animated: true)
     }
-}
-
-// Модели за декодиране на API отговора
-struct TMDBResponse: Decodable {
-    let results: [Movie]
-}
-
-struct Movie: Decodable {
-    let title: String
-    let overview: String
-    let vote_average: Double
-    let poster_path: String?
+    
+    // Модели за декодиране на API отговора
+    struct TMDBResponse: Decodable {
+        let results: [MovieModel] // Използваме MovieModel
+    }
 }

@@ -63,8 +63,9 @@ struct MovieListView: View {
 struct MovieListView_Previews: PreviewProvider {
     static var previews: some View {
         MovieListView(movies: [
-            MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: nil),
-            MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: nil)
+            MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: nil, overview: "A mind-bending thriller about dreams within dreams."),
+            MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: nil, overview: "A journey to save humanity through interstellar travel.")
         ], onMovieSelect: { _ in })
     }
 }
+

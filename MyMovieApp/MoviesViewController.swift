@@ -1,12 +1,12 @@
 import UIKit
 import SwiftUI
 
-// Преименувана структура `MovieModel`
 struct MovieModel: Decodable, Identifiable {
     let id: Int
     let title: String
     let vote_average: Double // Рейтинг
     let poster_path: String? // Път към постера
+    let overview: String? // Описание на филма (добавено поле)
 }
 
 class MoviesViewController: UIViewController {
@@ -83,14 +83,15 @@ class MoviesViewController: UIViewController {
     func showMovieDetail(movie: MovieModel) {
         let moviePosterURL = "https://image.tmdb.org/t/p/w500" + (movie.poster_path ?? "")
         let movieRating = movie.vote_average
-        
+        let movieDescription = movie.overview ?? "Няма описание за този филм." // Реално описание или fallback текст
+
         let detailView = MovieDetailView(
             movieTitle: movie.title,
-            movieDescription: "Това е описание на филма \(movie.title).",
+            movieDescription: movieDescription, // Използваме реалното описание
             movieRating: movieRating,
             moviePosterURL: moviePosterURL
         )
-        
+
         let detailHostingController = UIHostingController(rootView: detailView)
         self.navigationController?.pushViewController(detailHostingController, animated: true)
     }

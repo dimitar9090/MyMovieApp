@@ -66,8 +66,8 @@ struct SearchView: View {
 struct SearchView_Previews: PreviewProvider {
     static var previews: some View {
         SearchView(movies: [
-            MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg"),
-            MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: "/poster2.jpg")
+            MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller about dreams within dreams."),
+            MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: "/poster2.jpg", overview: "A space epic that explores the boundaries of science and human survival.")
         ])
     }
 }

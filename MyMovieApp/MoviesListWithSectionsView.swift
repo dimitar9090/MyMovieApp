@@ -73,43 +73,12 @@ struct MoviesListWithSectionsView: View {
                     }
                 }
             }
-            // Navigating to the Search View when search is active
             .navigationDestination(isPresented: $isSearchActive) {
                 SearchView(movies: topRatedMovies + popularMovies + latestMovies)
             }
-            // Navigating to the Favorites View when favorites is active
             .navigationDestination(isPresented: $isFavoritesActive) {
-                FavoritesView(favoriteMovies: favoriteMovies) // Show the list of favorite movies
+                FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect)
             }
         }
     }
 }
-
-// MovieRowView to handle individual rows in the movie sections
-struct MovieRowView: View {
-    var movie: MovieModel
-    var isFavorite: Bool
-    var onMovieSelect: (MovieModel) -> Void
-    var onToggleFavorite: (MovieModel) -> Void
-    
-    var body: some View {
-        HStack {
-            Button(action: {
-                onMovieSelect(movie)
-            }) {
-                Text(movie.title)
-            }
-            
-            Spacer()
-            
-            Button(action: {
-                onToggleFavorite(movie)
-            }) {
-                Image(systemName: isFavorite ? "heart.fill" : "heart")
-            }
-            .buttonStyle(BorderlessButtonStyle())
-        }
-    }
-}
-
-

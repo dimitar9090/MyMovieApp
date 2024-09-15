@@ -17,11 +17,11 @@ class MoviesViewController: UIViewController {
             popularMovies: getPopularMovies(),
             latestMovies: getLatestMovies(),
             favoriteMovies: favoriteMovies,
-            onMovieSelect: { movie in
-                self.showMovieDetail(movie: movie)
+            onMovieSelect: { [weak self] movie in
+                self?.showMovieDetail(movie: movie)
             },
-            onToggleFavorite: { movie in
-                self.toggleFavorite(movie: movie)
+            onToggleFavorite: { [weak self] movie in
+                self?.toggleFavorite(movie: movie)
             }
         )
         

@@ -25,3 +25,15 @@ struct FavoritesView: View {
         }
     }
 }
+struct FavoritesView_Previews: PreviewProvider {
+    static var previews: some View {
+        // Примерни данни за преглед
+        let sampleMovies = [
+            MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller."),
+            MovieModel(id: 2, title: "The Matrix", vote_average: 8.7, poster_path: "/poster2.jpg", overview: "A dystopian future."),
+            MovieModel(id: 3, title: "Interstellar", vote_average: 8.6, poster_path: "/poster3.jpg", overview: "A journey through space.")
+        ]
+        
+        FavoritesView(favoriteMovies: sampleMovies)
+    }
+}

@@ -1,28 +1,31 @@
 import UIKit
 import SwiftUI
 
-struct MovieModel: Decodable, Identifiable {
-    let id: Int
-    let title: String
-    let vote_average: Double // Рейтинг
-    let poster_path: String? // Път към постера
-    let overview: String? // Описание на филма (добавено поле)
-}
-
 class MoviesViewController: UIViewController {
     
-    var movies: [MovieModel] = [] // Използваме MovieModel
+    var movies: [MovieModel] = [] // Списък с всички филми
+    var favoriteMovies: [MovieModel] = [] // Списък с любими филми
     var hostingController: UIHostingController<MovieListView>? // Хостинг контролер за SwiftUI изгледа
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Създаваме празен списък първоначално
-        let swiftUIView = MovieListView(movies: [], onMovieSelect: { movie in
-            self.showMovieDetail(movie: movie)
-        })
+        loadFavoriteMovies() // Зареждаме любимите филми
         
-        // Свързваме SwiftUI изгледа с UIKit
+        let swiftUIView = MovieListView(
+            movies: movies,
+            favoriteMovies: favoriteMovies,
+            onMovieSelect: { movie in
+                self.showMovieDetail(movie: movie)
+            },
+            onToggleFavorite: { movie in
+                self.toggleFavorite(movie: movie)
+            },
+            onShowFavorites: { [weak self] in
+                self?.showFavorites()
+            }
+        )
+        
         hostingController = UIHostingController(rootView: swiftUIView)
         guard let hostingController = hostingController else { return }
         
@@ -32,12 +35,59 @@ class MoviesViewController: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         
-        // Стартираме извличането на филмите
-        fetchMoviesFromAPI()
+        fetchMoviesFromAPI() // Зареждаме филмите
     }
-    
+
+    func showMovieDetail(movie: MovieModel) {
+        let detailView = MovieDetailView(movie: movie)
+        let detailHostingController = UIHostingController(rootView: detailView)
+        self.navigationController?.pushViewController(detailHostingController, animated: true)
+    }
+
+    func toggleFavorite(movie: MovieModel) {
+        if favoriteMovies.contains(where: { $0.id == movie.id }) {
+            favoriteMovies.removeAll { $0.id == movie.id }
+        } else {
+            favoriteMovies.append(movie)
+        }
+        saveFavoriteMovies()
+        updateMovieList()
+    }
+
+    func saveFavoriteMovies() {
+        if let encodedData = try? JSONEncoder().encode(favoriteMovies) {
+            UserDefaults.standard.set(encodedData, forKey: "favoriteMovies")
+        }
+    }
+
+    func loadFavoriteMovies() {
+        if let savedData = UserDefaults.standard.data(forKey: "favoriteMovies"),
+           let decodedMovies = try? JSONDecoder().decode([MovieModel].self, from: savedData) {
+            favoriteMovies = decodedMovies
+        }
+    }
+
+    func updateMovieList() {
+        guard let hostingController = hostingController else { return }
+        
+        let swiftUIView = MovieListView(
+            movies: movies,
+            favoriteMovies: favoriteMovies,
+            onMovieSelect: { [weak self] movie in
+                self?.showMovieDetail(movie: movie)
+            },
+            onToggleFavorite: { [weak self] movie in
+                self?.toggleFavorite(movie: movie)
+            },
+            onShowFavorites: { [weak self] in
+                self?.showFavorites()
+            }
+        )
+        hostingController.rootView = swiftUIView
+    }
+
     func fetchMoviesFromAPI() {
-        let apiKey = "fcd4f865cc4f813896649cc8fea50296" // API ключът
+        let apiKey = "fcd4f865cc4f813896649cc8fea50296"
         let urlString = "https://api.themoviedb.org/3/movie/popular?api_key=\(apiKey)&language=en-US&page=1"
         
         guard let url = URL(string: urlString) else { return }
@@ -51,11 +101,9 @@ class MoviesViewController: UIViewController {
             guard let data = data else { return }
             
             do {
-                // Декодираме JSON отговорът
                 let decodedResponse = try JSONDecoder().decode(TMDBResponse.self, from: data)
                 self?.movies = decodedResponse.results
                 
-                // Обновяваме UI на главния thread
                 DispatchQueue.main.async {
                     self?.updateMovieList()
                 }
@@ -67,37 +115,24 @@ class MoviesViewController: UIViewController {
         
         task.resume()
     }
-    
-    func updateMovieList() {
-        // Обновяваме SwiftUI изгледа със заредените филми
-        guard let hostingController = hostingController else { return }
-        
-        let swiftUIView = MovieListView(movies: movies, onMovieSelect: { [weak self] movie in
-            self?.showMovieDetail(movie: movie)
-        })
-        
-        // Обновяваме съдържанието на хостинг контролера
-        hostingController.rootView = swiftUIView
-    }
-    
-    func showMovieDetail(movie: MovieModel) {
-        let moviePosterURL = "https://image.tmdb.org/t/p/w500" + (movie.poster_path ?? "")
-        let movieRating = movie.vote_average
-        let movieDescription = movie.overview ?? "Няма описание за този филм." // Реално описание или fallback текст
 
-        let detailView = MovieDetailView(
-            movieTitle: movie.title,
-            movieDescription: movieDescription, // Използваме реалното описание
-            movieRating: movieRating,
-            moviePosterURL: moviePosterURL
+    func showFavorites() {
+        let favoritesView = MovieListView(
+            movies: favoriteMovies,
+            favoriteMovies: favoriteMovies,
+            onMovieSelect: { [weak self] movie in
+                self?.showMovieDetail(movie: movie)
+            },
+            onToggleFavorite: { [weak self] movie in
+                self?.toggleFavorite(movie: movie)
+            },
+            onShowFavorites: { }
         )
-
-        let detailHostingController = UIHostingController(rootView: detailView)
-        self.navigationController?.pushViewController(detailHostingController, animated: true)
+        let favoritesHostingController = UIHostingController(rootView: favoritesView)
+        self.navigationController?.pushViewController(favoritesHostingController, animated: true)
     }
-    
-    // Модели за декодиране на API отговора
+
     struct TMDBResponse: Decodable {
-        let results: [MovieModel] // Използваме MovieModel
+        let results: [MovieModel]
     }
 }

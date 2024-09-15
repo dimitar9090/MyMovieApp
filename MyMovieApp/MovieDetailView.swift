@@ -1,48 +1,44 @@
 import SwiftUI
 
 struct MovieDetailView: View {
-    var movieTitle: String
-    var movieDescription: String
-    var movieRating: Double
-    var moviePosterURL: String
+    var movie: MovieModel
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text(movieTitle)
+        VStack {
+            Text(movie.title)
                 .font(.largeTitle)
-                .fontWeight(.bold)
+                .padding()
 
-            Text(movieDescription)
-                .font(.body)
-                .foregroundColor(.gray)
-            
-            Text("Rating: \(movieRating, specifier: "%.1f")/10")
-                .font(.subheadline)
-                .foregroundColor(.blue)
-            
-            AsyncImage(url: URL(string: moviePosterURL)) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } placeholder: {
-                ProgressView()
+            if let posterPath = movie.poster_path {
+                AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500" + posterPath)) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } placeholder: {
+                    ProgressView() // Показваме индикатор на зареждане, докато изображението се зарежда
+                }
+                .padding()
+            } else {
+                Image(systemName: "photo") // Дефолтна икона, ако няма изображение
+                    .padding()
             }
-            .frame(width: 200, height: 300)
+
+            Text("Rating: \(movie.vote_average, specifier: "%.1f")")
+                .padding()
+
+            if let overview = movie.overview {
+                Text(overview)
+                    .padding()
+            }
 
             Spacer()
         }
-        .padding()
-        .navigationTitle("Details")
+        .navigationTitle("Movie Details")
     }
 }
 
 struct MovieDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieDetailView(
-            movieTitle: "Inception",
-            movieDescription: "A mind-bending thriller about dreams within dreams.",
-            movieRating: 8.8,
-            moviePosterURL: "https://image.tmdb.org/t/p/w500//posterPathExample.jpg"
-        )
+        MovieDetailView(movie: MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller about dreams within dreams."))
     }
 }

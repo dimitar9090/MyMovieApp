@@ -3,26 +3,25 @@ import SwiftUI
 
 class MoviesViewController: UIViewController {
     
-    var movies: [MovieModel] = [] // Списък с всички филми
-    var favoriteMovies: [MovieModel] = [] // Списък с любими филми
-    var hostingController: UIHostingController<MovieListView>? // Хостинг контролер за SwiftUI изгледа
+    var movies: [MovieModel] = [] // All movies
+    var favoriteMovies: [MovieModel] = [] // Favorite movies
+    var hostingController: UIHostingController<MoviesListWithSectionsView>? // Hosting controller for SwiftUI
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadFavoriteMovies() // Зареждаме любимите филми
+        loadFavoriteMovies() // Load favorite movies
         
-        let swiftUIView = MovieListView(
-            movies: movies,
+        let swiftUIView = MoviesListWithSectionsView(
+            topRatedMovies: getTopRatedMovies(),
+            popularMovies: getPopularMovies(),
+            latestMovies: getLatestMovies(),
             favoriteMovies: favoriteMovies,
             onMovieSelect: { movie in
                 self.showMovieDetail(movie: movie)
             },
             onToggleFavorite: { movie in
                 self.toggleFavorite(movie: movie)
-            },
-            onShowFavorites: { [weak self] in
-                self?.showFavorites()
             }
         )
         
@@ -35,7 +34,7 @@ class MoviesViewController: UIViewController {
         view.addSubview(hostingController.view)
         hostingController.didMove(toParent: self)
         
-        fetchMoviesFromAPI() // Зареждаме филмите
+        fetchMoviesFromAPI() // Load movies
     }
 
     func showMovieDetail(movie: MovieModel) {
@@ -70,17 +69,16 @@ class MoviesViewController: UIViewController {
     func updateMovieList() {
         guard let hostingController = hostingController else { return }
         
-        let swiftUIView = MovieListView(
-            movies: movies,
+        let swiftUIView = MoviesListWithSectionsView(
+            topRatedMovies: getTopRatedMovies(),
+            popularMovies: getPopularMovies(),
+            latestMovies: getLatestMovies(),
             favoriteMovies: favoriteMovies,
             onMovieSelect: { [weak self] movie in
                 self?.showMovieDetail(movie: movie)
             },
             onToggleFavorite: { [weak self] movie in
                 self?.toggleFavorite(movie: movie)
-            },
-            onShowFavorites: { [weak self] in
-                self?.showFavorites()
             }
         )
         hostingController.rootView = swiftUIView
@@ -116,20 +114,19 @@ class MoviesViewController: UIViewController {
         task.resume()
     }
 
-    func showFavorites() {
-        let favoritesView = MovieListView(
-            movies: favoriteMovies,
-            favoriteMovies: favoriteMovies,
-            onMovieSelect: { [weak self] movie in
-                self?.showMovieDetail(movie: movie)
-            },
-            onToggleFavorite: { [weak self] movie in
-                self?.toggleFavorite(movie: movie)
-            },
-            onShowFavorites: { }
-        )
-        let favoritesHostingController = UIHostingController(rootView: favoritesView)
-        self.navigationController?.pushViewController(favoritesHostingController, animated: true)
+    // Helper functions for getting categorized movies
+    func getTopRatedMovies() -> [MovieModel] {
+        return movies.sorted(by: { $0.vote_average > $1.vote_average }).prefix(10).map { $0 }
+    }
+
+    func getPopularMovies() -> [MovieModel] {
+        // Replace with real logic for fetching popular movies
+        return movies.prefix(10).map { $0 }
+    }
+
+    func getLatestMovies() -> [MovieModel] {
+        // Replace with real logic for fetching the latest movies
+        return movies.suffix(10).map { $0 }
     }
 
     struct TMDBResponse: Decodable {

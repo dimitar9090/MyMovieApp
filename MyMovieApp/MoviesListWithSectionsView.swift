@@ -75,7 +75,12 @@ struct MoviesListWithSectionsView: View {
                 }
             }
             .navigationDestination(isPresented: $isSearchActive) {
-                SearchView(movies: topRatedMovies + popularMovies + latestMovies)
+                SearchView(
+                    movies: topRatedMovies + popularMovies + latestMovies,
+                    favoriteMovies: favoriteMovies, // Добавяме списъка с любими филми
+                    onMovieSelect: onMovieSelect, // Добавяме action за избор на филм
+                    onToggleFavorite: onToggleFavorite // Добавяме action за добавяне/премахване от любими
+                )
             }
             .navigationDestination(isPresented: $isFavoritesActive) {
                 FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect, onDeleteFavorite: onDeleteFavorite) // Подаваме onDeleteFavorite

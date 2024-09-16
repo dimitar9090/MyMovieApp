@@ -69,7 +69,12 @@ struct MovieListView: View {
                 }
             }
             .navigationDestination(isPresented: $isSearchActive) {
-                SearchView(movies: movies)
+                SearchView(
+                    movies: movies,
+                    favoriteMovies: favoriteMovies, // Добавяме списъка с любими филми
+                    onMovieSelect: onMovieSelect, // Добавяме action за избор на филм
+                    onToggleFavorite: onToggleFavorite // Добавяме action за добавяне/премахване от любими
+                )
             }
         }
     }

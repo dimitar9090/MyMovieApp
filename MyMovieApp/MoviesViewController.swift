@@ -22,6 +22,9 @@ class MoviesViewController: UIViewController {
             },
             onToggleFavorite: { [weak self] movie in
                 self?.toggleFavorite(movie: movie)
+            },
+            onDeleteFavorite: { [weak self] movie in // Добавяме onDeleteFavorite
+                self?.deleteFavorite(movie: movie)
             }
         )
         
@@ -53,6 +56,12 @@ class MoviesViewController: UIViewController {
         updateMovieList()
     }
 
+    func deleteFavorite(movie: MovieModel) {
+        favoriteMovies.removeAll { $0.id == movie.id }
+        saveFavoriteMovies()
+        updateMovieList()
+    }
+
     func saveFavoriteMovies() {
         if let encodedData = try? JSONEncoder().encode(favoriteMovies) {
             UserDefaults.standard.set(encodedData, forKey: "favoriteMovies")
@@ -79,6 +88,9 @@ class MoviesViewController: UIViewController {
             },
             onToggleFavorite: { [weak self] movie in
                 self?.toggleFavorite(movie: movie)
+            },
+            onDeleteFavorite: { [weak self] movie in
+                self?.deleteFavorite(movie: movie)
             }
         )
         hostingController.rootView = swiftUIView

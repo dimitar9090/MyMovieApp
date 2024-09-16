@@ -7,9 +7,10 @@ struct MoviesListWithSectionsView: View {
     var favoriteMovies: [MovieModel]
     var onMovieSelect: (MovieModel) -> Void
     var onToggleFavorite: (MovieModel) -> Void
+    var onDeleteFavorite: (MovieModel) -> Void // Добавяме параметър за изтриване от любими
     
     @State private var isSearchActive = false
-    @State private var isFavoritesActive = false // New state for showing favorites
+    @State private var isFavoritesActive = false // Състояние за показване на любими
 
     var body: some View {
         NavigationStack {
@@ -58,7 +59,7 @@ struct MoviesListWithSectionsView: View {
                     
                     // Favorites button
                     Button(action: {
-                        isFavoritesActive = true // Activate the favorites view
+                        isFavoritesActive = true // Активираме екрана с любими
                     }) {
                         Image(systemName: "heart.fill")
                     }
@@ -77,7 +78,7 @@ struct MoviesListWithSectionsView: View {
                 SearchView(movies: topRatedMovies + popularMovies + latestMovies)
             }
             .navigationDestination(isPresented: $isFavoritesActive) {
-                FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect)
+                FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect, onDeleteFavorite: onDeleteFavorite) // Подаваме onDeleteFavorite
             }
         }
     }

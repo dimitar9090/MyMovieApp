@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    var favoriteMovies: [MovieModel]
-    var onMovieSelect: (MovieModel) -> Void // Добавяме action за избиране на филм
-
+    @State var favoriteMovies: [MovieModel]
+    var onMovieSelect: (MovieModel) -> Void
+    var onDeleteFavorite: (MovieModel) -> Void // Action за изтриване на филм от любими
+    
     var body: some View {
         NavigationStack {
             if favoriteMovies.isEmpty {
@@ -11,17 +12,29 @@ struct FavoritesView: View {
                     .foregroundColor(.gray)
                     .font(.headline)
             } else {
-                List(favoriteMovies, id: \.id) { movie in
-                    MovieRowView(
-                        movie: movie,
-                        isFavorite: true,
-                        onMovieSelect: onMovieSelect, // Извикваме action-а при избиране на филм
-                        onToggleFavorite: { _ in } // Не използваме тук
-                    )
+                List {
+                    ForEach(favoriteMovies, id: \.id) { movie in
+                        MovieRowView(
+                            movie: movie,
+                            isFavorite: true,
+                            onMovieSelect: onMovieSelect,
+                            onToggleFavorite: { _ in } // Не използваме тук
+                        )
+                    }
+                    .onDelete(perform: deleteMovie)
                 }
                 .navigationTitle("Favorites")
             }
         }
+    }
+    
+    // Функция за изтриване на филм от списъка
+    func deleteMovie(at offsets: IndexSet) {
+        offsets.forEach { index in
+            let movie = favoriteMovies[index]
+            onDeleteFavorite(movie) // Извиква се action-а за изтриване
+        }
+        favoriteMovies.remove(atOffsets: offsets)
     }
 }
 
@@ -34,6 +47,6 @@ struct FavoritesView_Previews: PreviewProvider {
             MovieModel(id: 3, title: "Interstellar", vote_average: 8.6, poster_path: "/poster3.jpg", overview: "A journey through space.")
         ]
         
-        FavoritesView(favoriteMovies: sampleMovies, onMovieSelect: { _ in })
+        FavoritesView(favoriteMovies: sampleMovies, onMovieSelect: { _ in }, onDeleteFavorite: { _ in })
     }
 }

@@ -2,9 +2,9 @@ import UIKit
 import SwiftUI
 
 class MoviesViewController: UIViewController {
-    
+
     var movies: [MovieModel] = [] // All movies
-    var favoriteMovies: [MovieModel] = [] // Favorite movies
+    private var favoriteMovies: [MovieModel] = [] // Favorite movies (not a @State)
     var hostingController: UIHostingController<MoviesListWithSectionsView>? // Hosting controller for SwiftUI
 
     override func viewDidLoad() {
@@ -16,14 +16,14 @@ class MoviesViewController: UIViewController {
             topRatedMovies: getTopRatedMovies(),
             popularMovies: getPopularMovies(),
             latestMovies: getLatestMovies(),
-            favoriteMovies: favoriteMovies,
+            favoriteMovies: favoriteMovies, // Directly pass the array
             onMovieSelect: { [weak self] movie in
                 self?.showMovieDetail(movie: movie)
             },
             onToggleFavorite: { [weak self] movie in
                 self?.toggleFavorite(movie: movie)
             },
-            onDeleteFavorite: { [weak self] movie in // Добавяме onDeleteFavorite
+            onDeleteFavorite: { [weak self] movie in
                 self?.deleteFavorite(movie: movie)
             }
         )
@@ -82,7 +82,7 @@ class MoviesViewController: UIViewController {
             topRatedMovies: getTopRatedMovies(),
             popularMovies: getPopularMovies(),
             latestMovies: getLatestMovies(),
-            favoriteMovies: favoriteMovies,
+            favoriteMovies: favoriteMovies, // Directly pass the array
             onMovieSelect: { [weak self] movie in
                 self?.showMovieDetail(movie: movie)
             },
@@ -132,12 +132,10 @@ class MoviesViewController: UIViewController {
     }
 
     func getPopularMovies() -> [MovieModel] {
-        // Replace with real logic for fetching popular movies
         return movies.prefix(10).map { $0 }
     }
 
     func getLatestMovies() -> [MovieModel] {
-        // Replace with real logic for fetching the latest movies
         return movies.suffix(10).map { $0 }
     }
 

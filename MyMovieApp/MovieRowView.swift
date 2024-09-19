@@ -1,10 +1,3 @@
-//
-//  MovieRowView.swift
-//  MyMovieApp
-//
-//  Created by Dimitar Angelov on 15.09.24.
-//
-
 import SwiftUI
 
 struct MovieRowView: View {
@@ -31,14 +24,17 @@ struct MovieRowView: View {
             Spacer()
             
             Button(action: {
+                print("Toggle favorite for movie: \(movie.title)")
                 onToggleFavorite(movie)
             }) {
                 Image(systemName: isFavorite ? "heart.fill" : "heart")
                     .foregroundColor(isFavorite ? .red : .gray)
             }
+            .buttonStyle(PlainButtonStyle()) // Осигуряване на стил на бутона без допълнителни стилове
         }
         .contentShape(Rectangle())
         .onTapGesture {
+            print("Movie tapped: \(movie.title)")
             onMovieSelect(movie)
         }
     }

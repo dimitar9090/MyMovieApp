@@ -4,7 +4,7 @@ struct MoviesListWithSectionsView: View {
     var topRatedMovies: [MovieModel]
     var popularMovies: [MovieModel]
     var latestMovies: [MovieModel]
-    var favoriteMovies: [MovieModel]
+    var favoriteMovies: [MovieModel] // Changed from Binding<[MovieModel]> to [MovieModel]
     var onMovieSelect: (MovieModel) -> Void
     var onToggleFavorite: (MovieModel) -> Void
     var onDeleteFavorite: (MovieModel) -> Void

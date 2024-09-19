@@ -19,6 +19,7 @@ struct SearchView: View {
 
     var body: some View {
         VStack {
+            // Search bar
             TextField("Search for movies", text: $searchText)
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -26,12 +27,16 @@ struct SearchView: View {
                 .padding(.horizontal)
                 .foregroundColor(.white)
 
+            // Movie list or no results message
             if !filteredMovies.isEmpty {
                 List(filteredMovies, id: \.id) { movie in
                     HStack {
                         Text(movie.title)
                             .foregroundColor(.white)
+                        
                         Spacer()
+                        
+                        // Favorite toggle button
                         Button(action: {
                             onToggleFavorite(movie)
                         }) {
@@ -48,6 +53,23 @@ struct SearchView: View {
                     .padding()
             }
         }
-        .background(Color.black.edgesIgnoringSafeArea(.all))
+        .background(Color.black.edgesIgnoringSafeArea(.all)) // Background color
+    }
+}
+
+// Preview
+struct SearchView_Previews: PreviewProvider {
+    static var previews: some View {
+        SearchView(
+            movies: [
+                MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller about dreams within dreams."),
+                MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: "/poster2.jpg", overview: "A space epic that explores the boundaries of science and human survival.")
+            ],
+            favoriteMovies: [],
+            onMovieSelect: { _ in print("Selected movie") },
+            onToggleFavorite: { _ in print("Toggled favorite") }
+        )
+        .previewLayout(.sizeThatFits)
+        .padding()
     }
 }

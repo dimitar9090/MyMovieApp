@@ -25,6 +25,8 @@ struct MovieRowView: View {
             }
             
             Text(movie.title)
+                .font(.headline)
+                .lineLimit(2)
             
             Spacer()
             
@@ -32,11 +34,25 @@ struct MovieRowView: View {
                 onToggleFavorite(movie)
             }) {
                 Image(systemName: isFavorite ? "heart.fill" : "heart")
+                    .foregroundColor(isFavorite ? .red : .gray)
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
             onMovieSelect(movie)
         }
+    }
+}
+
+struct MovieRowView_Previews: PreviewProvider {
+    static var previews: some View {
+        MovieRowView(
+            movie: MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller about dreams within dreams."),
+            isFavorite: true,
+            onMovieSelect: { _ in print("Selected movie") },
+            onToggleFavorite: { _ in print("Toggled favorite") }
+        )
+        .previewLayout(.sizeThatFits)
+        .padding()
     }
 }

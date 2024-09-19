@@ -72,11 +72,11 @@
 			children = (
 				D14C961F2C92345100E13705 /* AppDelegate.swift */,
 				D14C96212C92345100E13705 /* SceneDelegate.swift */,
+				D143CB2A2C96CC18006F45C9 /* MovieModel.swift */,
 				D14C96352C9235E500E13705 /* MoviesViewController.swift */,
 				D14C96332C9234D900E13705 /* MovieListView.swift */,
 				D143CB302C9771B3006F45C9 /* MoviesListWithSectionsView.swift */,
 				D143CB322C977609006F45C9 /* MovieRowView.swift */,
-				D143CB2A2C96CC18006F45C9 /* MovieModel.swift */,
 				D143CB282C96CAD5006F45C9 /* FavoritesView.swift */,
 				D15FC4D92C94D5FA00C68013 /*  SearchView.swift */,
 				D14C96372C92382400E13705 /* MovieDetailView.swift */,

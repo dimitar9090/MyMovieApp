@@ -7,10 +7,10 @@ struct MoviesListWithSectionsView: View {
     var favoriteMovies: [MovieModel]
     var onMovieSelect: (MovieModel) -> Void
     var onToggleFavorite: (MovieModel) -> Void
-    var onDeleteFavorite: (MovieModel) -> Void // Добавяме параметър за изтриване от любими
+    var onDeleteFavorite: (MovieModel) -> Void
     
     @State private var isSearchActive = false
-    @State private var isFavoritesActive = false // Състояние за показване на любими
+    @State private var isFavoritesActive = false
 
     var body: some View {
         NavigationStack {
@@ -39,7 +39,6 @@ struct MoviesListWithSectionsView: View {
             .navigationTitle("Movies")
             .toolbar {
                 ToolbarItemGroup(placement: .bottomBar) {
-                    // Home button
                     Button(action: {
                         print("Home tapped")
                     }) {
@@ -48,7 +47,6 @@ struct MoviesListWithSectionsView: View {
                     
                     Spacer()
                     
-                    // Search button
                     Button(action: {
                         isSearchActive = true
                     }) {
@@ -57,16 +55,14 @@ struct MoviesListWithSectionsView: View {
                     
                     Spacer()
                     
-                    // Favorites button
                     Button(action: {
-                        isFavoritesActive = true // Активираме екрана с любими
+                        isFavoritesActive = true
                     }) {
                         Image(systemName: "heart.fill")
                     }
                     
                     Spacer()
                     
-                    // Account button
                     Button(action: {
                         print("Account tapped")
                     }) {
@@ -77,15 +73,14 @@ struct MoviesListWithSectionsView: View {
             .navigationDestination(isPresented: $isSearchActive) {
                 SearchView(
                     movies: topRatedMovies + popularMovies + latestMovies,
-                    favoriteMovies: favoriteMovies, // Добавяме списъка с любими филми
-                    onMovieSelect: onMovieSelect, // Добавяме action за избор на филм
-                    onToggleFavorite: onToggleFavorite // Добавяме action за добавяне/премахване от любими
+                    favoriteMovies: favoriteMovies,
+                    onMovieSelect: onMovieSelect,
+                    onToggleFavorite: onToggleFavorite
                 )
             }
             .navigationDestination(isPresented: $isFavoritesActive) {
-                FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect, onDeleteFavorite: onDeleteFavorite) // Подаваме onDeleteFavorite
+                FavoritesView(favoriteMovies: favoriteMovies, onMovieSelect: onMovieSelect, onDeleteFavorite: onDeleteFavorite)
             }
         }
     }
 }
-//

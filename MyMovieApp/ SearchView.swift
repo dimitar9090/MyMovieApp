@@ -1,18 +1,12 @@
 import SwiftUI
 
 struct SearchView: View {
-    @State private var searchText = "" // Текущ текст в полето за търсене
-    var movies: [MovieModel] // Списък с филми
-    var favoriteMovies: [MovieModel] // Любими филми
-    var onMovieSelect: (MovieModel) -> Void // Избиране на филм за показване на DetailView
-    var onToggleFavorite: (MovieModel) -> Void // Добавяне/премахване на филм от любими
+    @State private var searchText = ""
+    var movies: [MovieModel]
+    var favoriteMovies: [MovieModel]
+    var onMovieSelect: (MovieModel) -> Void
+    var onToggleFavorite: (MovieModel) -> Void
     
-    // Избиране на произволен филм за фон
-    var randomMovie: MovieModel? {
-        movies.randomElement()
-    }
-    
-    // Филтриране на филмите според търсене
     var filteredMovies: [MovieModel] {
         if searchText.isEmpty {
             return []
@@ -22,79 +16,38 @@ struct SearchView: View {
             }
         }
     }
-    
+
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Показваме произволен постер като фон
-                if let posterPath = randomMovie?.poster_path {
-                    AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)")) { image in
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .opacity(0.4) // Леко намален фон
-                            .ignoresSafeArea()
-                    } placeholder: {
-                        Color.black.opacity(0.1)
-                    }
-                }
-                
-                VStack {
-                    // Потребителски TextField за търсене
+        VStack {
+            TextField("Search for movies", text: $searchText)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(8)
+                .padding(.horizontal)
+                .foregroundColor(.white)
+
+            if !filteredMovies.isEmpty {
+                List(filteredMovies, id: \.id) { movie in
                     HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.white) // По-светла икона
-                        TextField("Search for movies", text: $searchText)
-                            .foregroundColor(.white) // По-светъл текст
-                            .font(.system(size: 18, weight: .bold)) // Увеличен и по-смел шрифт
-                            .padding(12)
-                            .background(Color.black.opacity(0.5)) // Запазваме по-лек фон, без да е твърде тъмен
-                            .cornerRadius(12)
-                    }
-                    .padding()
-                    
-                    // Ако има резултати от търсене, показваме списъка
-                    if !filteredMovies.isEmpty {
-                        List(filteredMovies, id: \.id) { movie in
-                            HStack {
-                                Button(action: {
-                                    onMovieSelect(movie) // Извикваме DetailView за избрания филм
-                                }) {
-                                    Text(movie.title)
-                                        .foregroundColor(.black) // Текстът е черен за контраст с фона
-                                }
-                                
-                                Spacer()
-                                
-                                // Бутон за добавяне/премахване от любими
-                                Button(action: {
-                                    onToggleFavorite(movie) // Добавяне/премахване на филм от любими
-                                }) {
-                                    Image(systemName: favoriteMovies.contains(where: { $0.id == movie.id }) ? "heart.fill" : "heart")
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
-                            }
-                        }
-                    } else {
-                        Text("No results found")
+                        Text(movie.title)
                             .foregroundColor(.white)
+                        Spacer()
+                        Button(action: {
+                            onToggleFavorite(movie)
+                        }) {
+                            Image(systemName: favoriteMovies.contains(where: { $0.id == movie.id }) ? "heart.fill" : "heart")
+                        }
+                    }
+                    .onTapGesture {
+                        onMovieSelect(movie)
                     }
                 }
+            } else {
+                Text("No results found")
+                    .foregroundColor(.white)
+                    .padding()
             }
         }
-    }
-}
-
-struct SearchView_Previews: PreviewProvider {
-    static var previews: some View {
-        SearchView(
-            movies: [
-                MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller about dreams within dreams."),
-                MovieModel(id: 2, title: "Interstellar", vote_average: 8.6, poster_path: "/poster2.jpg", overview: "A space epic that explores the boundaries of science and human survival.")
-            ],
-            favoriteMovies: [],
-            onMovieSelect: { _ in },
-            onToggleFavorite: { _ in }
-        )
+        .background(Color.black.edgesIgnoringSafeArea(.all))
     }
 }

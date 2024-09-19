@@ -12,37 +12,31 @@ struct MovieRowView: View {
     var isFavorite: Bool
     var onMovieSelect: (MovieModel) -> Void
     var onToggleFavorite: (MovieModel) -> Void
-
+    
     var body: some View {
         HStack {
-            Button(action: {
-                onMovieSelect(movie)
-            }) {
-                Text(movie.title)
-                    .font(.headline)
+            AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path ?? "")")) { image in
+                image
+                    .resizable()
+                    .frame(width: 50, height: 75)
+                    .cornerRadius(8)
+            } placeholder: {
+                Color.gray.frame(width: 50, height: 75).cornerRadius(8)
             }
-
+            
+            Text(movie.title)
+            
             Spacer()
-
+            
             Button(action: {
                 onToggleFavorite(movie)
             }) {
                 Image(systemName: isFavorite ? "heart.fill" : "heart")
-                    .foregroundColor(isFavorite ? .red : .gray)
             }
-            .buttonStyle(BorderlessButtonStyle())
         }
-        .padding()
-    }
-}
-
-struct MovieRowView_Previews: PreviewProvider {
-    static var previews: some View {
-        MovieRowView(
-            movie: MovieModel(id: 1, title: "Inception", vote_average: 8.8, poster_path: "/poster1.jpg", overview: "A mind-bending thriller."),
-            isFavorite: true,
-            onMovieSelect: { _ in },
-            onToggleFavorite: { _ in }
-        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onMovieSelect(movie)
+        }
     }
 }

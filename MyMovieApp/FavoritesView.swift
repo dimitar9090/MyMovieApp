@@ -6,38 +6,41 @@ struct FavoritesView: View {
     var onDeleteFavorite: (MovieModel) -> Void
 
     var body: some View {
-        List(favoriteMovies, id: \.id) { movie in
-            HStack {
-                AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path ?? "")")) { image in
-                    image
-                        .resizable()
-                        .frame(width: 50, height: 75)
-                        .cornerRadius(8)
-                } placeholder: {
-                    Color.gray.frame(width: 50, height: 75).cornerRadius(8)
+        List {
+            ForEach(favoriteMovies, id: \.id) { movie in
+                HStack {
+                    AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path ?? "")")) { image in
+                        image
+                            .resizable()
+                            .frame(width: 50, height: 75)
+                            .cornerRadius(8)
+                    } placeholder: {
+                        Color.gray.frame(width: 50, height: 75).cornerRadius(8)
+                    }
+                    
+                    Text(movie.title)
+                        .font(.headline)
+                        .lineLimit(2)
+                    
+                    Spacer()
                 }
-                
-                Text(movie.title)
-                    .font(.headline)
-                    .lineLimit(2)
-                
-                Spacer()
-                
-                Button(action: {
-                    onDeleteFavorite(movie)
-                }) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
+                .onTapGesture {
+                    onMovieSelect(movie)
                 }
             }
-            .onTapGesture {
-                onMovieSelect(movie)
+            .onDelete { indexSet in
+                indexSet.forEach { index in
+                    let movie = favoriteMovies[index]
+                    onDeleteFavorite(movie)
+                }
             }
         }
         .navigationTitle("Favorite Movies")
+        .listStyle(PlainListStyle()) // За по-изчистен вид на списъка
     }
 }
 
+// Preview
 struct FavoritesView_Previews: PreviewProvider {
     static var previews: some View {
         FavoritesView(
